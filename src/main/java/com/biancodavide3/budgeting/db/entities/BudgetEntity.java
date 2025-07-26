@@ -1,0 +1,30 @@
+package com.biancodavide3.budgeting.db.entities;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Entity
+@Table(name = "budgets")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class BudgetEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    private String month;
+    private BigDecimal totalBudget;
+
+    @OneToMany(mappedBy = "budget")
+    private List<CategoryBudgetEntity> categoryBudgets;
+}
