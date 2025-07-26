@@ -1,0 +1,20 @@
+name: budgeting
+
+services:
+  db:
+    image: xdavide9/budgeting-db:latest
+    container_name: db
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    networks:
+      - net
+
+volumes:
+  data:
+
+networks:
+  net:
+    driver: bridge
