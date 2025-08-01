@@ -43,12 +43,47 @@ CREATE TABLE category_budgets (
                                   UNIQUE(budget_id, category_id)
 );
 
--- Optional: Revoked Tokens (for JWT blacklist, if needed)
--- CREATE TABLE revoked_tokens (
---   id SERIAL PRIMARY KEY,
---   token TEXT NOT NULL,
---   revoked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
+-- Function to check if category amounts match the total_budget
+CREATE OR REPLACE FUNCTION validate_category_budgets()
+    RETURNS TRIGGER AS $$
+DECLARE
+    category_sum NUMERIC(10, 2);
+    expected_budget NUMERIC(10, 2);
+    b_id INTEGER;
+BEGIN
+    -- Determine the affected budget_id depending on the operation
+    IF TG_OP = 'DELETE' THEN
+        b_id := OLD.budget_id;
+    ELSE
+        b_id := NEW.budget_id;
+    END IF;
+
+    -- Sum all category amounts for the budget
+    SELECT COALESCE(SUM(amount), 0)
+    INTO category_sum
+    FROM category_budgets
+    WHERE budget_id = b_id;
+
+    -- Get the expected total budget
+    SELECT total_budget
+    INTO expected_budget
+    FROM budgets
+    WHERE id = b_id;
+
+    -- Validate
+    IF category_sum != expected_budget THEN
+        RAISE EXCEPTION 'Sum of category budgets (%.2f) does not match total_budget (%.2f)', category_sum, expected_budget;
+    END IF;
+
+    RETURN NULL; -- Not used for AFTER triggers
+END;
+$$ LANGUAGE plpgsql;
+
+-- AFTER INSERT/UPDATE/DELETE trigger on category_budgets
+CREATE TRIGGER trg_validate_category_budgets
+    AFTER INSERT OR UPDATE OR DELETE ON category_budgets
+    FOR EACH ROW
+EXECUTE FUNCTION validate_category_budgets();
 
 -- Indexes
 CREATE INDEX idx_expenses_date ON expenses(date);
