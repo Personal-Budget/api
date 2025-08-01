@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,7 @@ public class BudgetEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    private String month;
+    private YearMonth month;
     private BigDecimal totalBudget;
 
     @OneToMany(mappedBy = "budget")

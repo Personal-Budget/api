@@ -22,8 +22,8 @@ CREATE TABLE categories (
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
     List<CategoryEntity> findAllByUser_Id(Integer userId);
     Page<CategoryEntity> findAllByUser_Id(Integer userId, Pageable pageable);
-    List<CategoryEntity> findByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal);
-    Page<CategoryEntity> findByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal, Pageable pageable);
-    List<CategoryEntity> findByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal);
-    Page<CategoryEntity> findByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal, Pageable pageable);
+    List<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal);
+    Page<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal, Pageable pageable);
+    List<CategoryEntity> findAllByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal);
+    Page<CategoryEntity> findAllByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal, Pageable pageable);
 }
