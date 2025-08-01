@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.db.entities;
+package com.biancodavide3.budgeting.db.entities.converters;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

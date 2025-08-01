@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 /*
 CREATE TABLE budgets (
@@ -25,12 +26,9 @@ CREATE TABLE budgets (
 public interface BudgetRepository extends JpaRepository<BudgetEntity, Integer> {
     List<BudgetEntity> findAllByUser_Id(Integer userId);
     Page<BudgetEntity> findAllByUser_Id(Integer userId, Pageable pageable);
-    List<BudgetEntity> findByUser_IdAndMonth(Integer userId, YearMonth month);
-    Page<BudgetEntity> findByUser_IdAndMonth(Integer userId, YearMonth month, Pageable pageable);
+    Optional<BudgetEntity> findByUser_IdAndMonth(Integer userId, YearMonth month);
     List<BudgetEntity> findAllByUser_IdAndTotalBudgetGreaterThan(Integer userId, BigDecimal totalBudget);
     Page<BudgetEntity> findAllByUser_IdAndTotalBudgetGreaterThan(Integer userId, BigDecimal totalBudget, Pageable pageable);
     List<BudgetEntity> findAllByUser_IdAndTotalBudgetLessThan(Integer userId, BigDecimal totalBudget);
     Page<BudgetEntity> findAllByUser_IdAndTotalBudgetLessThan(Integer userId, BigDecimal totalBudget, Pageable pageable);
-
-
 }
