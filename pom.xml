@@ -8,11 +8,11 @@
         <version>3.5.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.biancodavide3</groupId>
-    <artifactId>budgeting</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>budgeting</name>
-    <description>budgeting</description>
+    <groupId>com.personalbudget</groupId>
+    <artifactId>api</artifactId>
+    <version>1.0</version>
+    <name>budgeting-api</name>
+    <description>budgeting-api</description>
     <url/>
     <licenses>
         <license/>
