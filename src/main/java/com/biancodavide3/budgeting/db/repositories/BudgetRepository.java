@@ -4,6 +4,7 @@ import com.biancodavide3.budgeting.db.entities.BudgetEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ CREATE TABLE budgets (
  */
 
 @Repository
-public interface BudgetRepository extends JpaRepository<BudgetEntity, Integer> {
+public interface BudgetRepository extends JpaRepository<BudgetEntity, Integer>, JpaSpecificationExecutor<BudgetEntity> {
     List<BudgetEntity> findAllByUser_Id(Integer userId);
     Page<BudgetEntity> findAllByUser_Id(Integer userId, Pageable pageable);
     Optional<BudgetEntity> findByUser_IdAndMonth(Integer userId, YearMonth month);

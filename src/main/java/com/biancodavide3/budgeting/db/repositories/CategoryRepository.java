@@ -4,6 +4,7 @@ import com.biancodavide3.budgeting.db.entities.CategoryEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ CREATE TABLE categories (
  */
 
 @Repository
-public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
+public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer>, JpaSpecificationExecutor<CategoryEntity> {
     List<CategoryEntity> findAllByUser_Id(Integer userId);
     Page<CategoryEntity> findAllByUser_Id(Integer userId, Pageable pageable);
     List<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal);

@@ -4,6 +4,7 @@ import com.biancodavide3.budgeting.db.entities.CategoryBudgetEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,7 +21,7 @@ CREATE TABLE category_budgets (
  */
 
 @Repository
-public interface CategoryBudgetRepository extends JpaRepository<CategoryBudgetEntity, Integer> {
+public interface CategoryBudgetRepository extends JpaRepository<CategoryBudgetEntity, Integer>, JpaSpecificationExecutor<CategoryBudgetEntity> {
     List<CategoryBudgetEntity> findAllByBudget_Id(Integer budgetId);
     Page<CategoryBudgetEntity> findAllByBudget_Id(Integer budgetId, Pageable pageable);
     Optional<CategoryBudgetEntity> findByBudget_IdAndCategory_Id(Integer budgetId, Integer categoryId);

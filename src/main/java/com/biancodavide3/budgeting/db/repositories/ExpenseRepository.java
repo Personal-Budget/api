@@ -4,6 +4,7 @@ import com.biancodavide3.budgeting.db.entities.ExpenseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ CREATE TABLE expenses (
  */
 
 @Repository
-public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer> {
+public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>, JpaSpecificationExecutor<ExpenseEntity> {
     List<ExpenseEntity> findAllByUser_Id(Integer userId);
     Page<ExpenseEntity> findAllByUser_Id(Integer userId, Pageable pageable);
     List<ExpenseEntity> findAllByUser_IdAndCategory_Id(Integer userId, Integer categoryId);
