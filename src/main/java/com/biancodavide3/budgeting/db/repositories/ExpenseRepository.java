@@ -37,7 +37,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
     Page<ExpenseEntity> findAllByUser_IdAndCategory_IdAndAmountGreaterThanAndDateBetween(Integer userId, Integer categoryId, BigDecimal goal, LocalDate startDate, LocalDate endDate, Pageable pageable);
     List<ExpenseEntity> findAllByUser_IdAndCategory_IdAndAmountLessThanAndDateBetween(Integer userId, Integer categoryId, BigDecimal goal, LocalDate startDate, LocalDate endDate);
     Page<ExpenseEntity> findAllByUser_IdAndCategory_IdAndAmountLessThanAndDateBetween(Integer userId, Integer categoryId, BigDecimal goal, LocalDate startDate, LocalDate endDate, Pageable pageable);
-    List<ExpenseEntity> findALlByUser_IdAndCategory_IdAndDateBetween(Integer userId, Integer categoryId, LocalDate startDate, LocalDate endDate);
+    List<ExpenseEntity> findAllByUser_IdAndCategory_IdAndDateBetween(Integer userId, Integer categoryId, LocalDate startDate, LocalDate endDate);
     Page<ExpenseEntity> findAllByUser_IdAndCategory_IdAndDateBetween(Integer userId, Integer categoryId, LocalDate startDate, LocalDate endDate, Pageable pageable);
     List<ExpenseEntity> findAllByUser_IdAndAmountGreaterThan(Integer userId, BigDecimal goal);
     Page<ExpenseEntity> findAllByUser_IdAndAmountGreaterThan(Integer userId, BigDecimal goal, Pageable pageable);

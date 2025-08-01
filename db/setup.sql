@@ -15,7 +15,8 @@ CREATE TABLE categories (
                             name VARCHAR(100) NOT NULL,
                             goal NUMERIC(10, 2) DEFAULT 0,
                             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+                            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                            UNIQUE(user_id, name)
 );
 
 -- Expenses table

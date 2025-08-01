@@ -8,13 +8,15 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 /*
 CREATE TABLE categories (
                             id SERIAL PRIMARY KEY,
                             user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                             name VARCHAR(100) NOT NULL,
-                            goal NUMERIC(10, 2) DEFAULT 0
+                            goal NUMERIC(10, 2) DEFAULT 0,
+                            UNIQUE(user_id, name)
 );
  */
 
@@ -26,4 +28,5 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
     Page<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal, Pageable pageable);
     List<CategoryEntity> findAllByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal);
     Page<CategoryEntity> findAllByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal, Pageable pageable);
+    Optional<CategoryEntity> findByUser_IdAndName(Integer userId, String name);
 }
