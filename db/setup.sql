@@ -4,7 +4,8 @@ CREATE TABLE users (
                        name VARCHAR(100) NOT NULL,
                        email VARCHAR(255) UNIQUE NOT NULL,
                        password_hash TEXT NOT NULL,
-                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                       created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                       updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Categories table
@@ -12,7 +13,9 @@ CREATE TABLE categories (
                             id SERIAL PRIMARY KEY,
                             user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                             name VARCHAR(100) NOT NULL,
-                            goal NUMERIC(10, 2) DEFAULT 0
+                            goal NUMERIC(10, 2) DEFAULT 0,
+                            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Expenses table
@@ -22,7 +25,9 @@ CREATE TABLE expenses (
                           category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
                           amount NUMERIC(10, 2) NOT NULL,
                           description TEXT,
-                          date DATE NOT NULL
+                          date DATE NOT NULL,
+                          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                          updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Budgets table
@@ -31,6 +36,8 @@ CREATE TABLE budgets (
                          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                          month VARCHAR(7) NOT NULL, -- Format: YYYY-MM
                          total_budget NUMERIC(10, 2) NOT NULL,
+                         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                         updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
                          UNIQUE(user_id, month)
 );
 
@@ -40,6 +47,8 @@ CREATE TABLE category_budgets (
                                   budget_id INTEGER REFERENCES budgets(id) ON DELETE CASCADE,
                                   category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
                                   amount NUMERIC(10, 2) NOT NULL,
+                                  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                                  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
                                   UNIQUE(budget_id, category_id)
 );
 
@@ -84,6 +93,36 @@ CREATE TRIGGER trg_validate_category_budgets
     AFTER INSERT OR UPDATE OR DELETE ON category_budgets
     FOR EACH ROW
 EXECUTE FUNCTION validate_category_budgets();
+
+-- Function to update the "updated_at" field automatically in every table
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Attach trigger to each table for UPDATEs
+CREATE TRIGGER trg_update_users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_update_categories_updated_at
+    BEFORE UPDATE ON categories
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_update_expenses_updated_at
+    BEFORE UPDATE ON expenses
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_update_budgets_updated_at
+    BEFORE UPDATE ON budgets
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_update_category_budgets_updated_at
+    BEFORE UPDATE ON category_budgets
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Indexes
 CREATE INDEX idx_expenses_date ON expenses(date);
