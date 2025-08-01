@@ -1,6 +1,6 @@
 -- Users table
 CREATE TABLE users (
-                       id SERIAL PRIMARY KEY,
+                       id BIGSERIAL PRIMARY KEY,
                        name VARCHAR(100) NOT NULL,
                        email VARCHAR(255) UNIQUE NOT NULL,
                        password_hash TEXT NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE users (
 
 -- Categories table
 CREATE TABLE categories (
-                            id SERIAL PRIMARY KEY,
-                            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                            id BIGSERIAL PRIMARY KEY,
+                            user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
                             name VARCHAR(100) NOT NULL,
                             goal NUMERIC(10, 2) DEFAULT 0,
                             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -21,9 +21,9 @@ CREATE TABLE categories (
 
 -- Expenses table
 CREATE TABLE expenses (
-                          id SERIAL PRIMARY KEY,
-                          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-                          category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
+                          id BIGSERIAL PRIMARY KEY,
+                          user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+                          category_id BIGINT REFERENCES categories(id) ON DELETE SET NULL,
                           amount NUMERIC(10, 2) NOT NULL,
                           description TEXT,
                           date DATE NOT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE expenses (
 
 -- Budgets table
 CREATE TABLE budgets (
-                         id SERIAL PRIMARY KEY,
-                         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                         id BIGSERIAL PRIMARY KEY,
+                         user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
                          month VARCHAR(7) NOT NULL, -- Format: YYYY-MM
                          total_budget NUMERIC(10, 2) NOT NULL,
                          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -44,9 +44,9 @@ CREATE TABLE budgets (
 
 -- Category Budgets table
 CREATE TABLE category_budgets (
-                                  id SERIAL PRIMARY KEY,
-                                  budget_id INTEGER REFERENCES budgets(id) ON DELETE CASCADE,
-                                  category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+                                  id BIGSERIAL PRIMARY KEY,
+                                  budget_id BIGINT REFERENCES budgets(id) ON DELETE CASCADE,
+                                  category_id BIGINT REFERENCES categories(id) ON DELETE CASCADE,
                                   amount NUMERIC(10, 2) NOT NULL,
                                   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
                                   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -59,7 +59,7 @@ CREATE OR REPLACE FUNCTION validate_category_budgets()
 DECLARE
     category_sum NUMERIC(10, 2);
     expected_budget NUMERIC(10, 2);
-    b_id INTEGER;
+    b_id BIGINT;
 BEGIN
     -- Determine the affected budget_id depending on the operation
     IF TG_OP = 'DELETE' THEN

@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @Builder
 public class CategoryBudgetSpecification implements Specification<CategoryBudgetEntity> {
 
-    private Integer budgetId;
-    private Integer categoryId;
+    private Long budgetId;
+    private Long categoryId;
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
 

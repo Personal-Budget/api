@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @Builder
 public class ExpenseSpecification implements Specification<ExpenseEntity> {
 
-    private Integer userId;
-    private Integer categoryId;
+    private Long userId;
+    private Long categoryId;
     private LocalDate dateFrom;
     private LocalDate dateTo;
     private BigDecimal minAmount;

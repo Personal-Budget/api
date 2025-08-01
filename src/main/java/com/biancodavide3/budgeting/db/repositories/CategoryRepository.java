@@ -13,7 +13,7 @@ import java.util.Optional;
 
 /*
 CREATE TABLE categories (
-                            id SERIAL PRIMARY KEY,
+                            id BIGSERIAL PRIMARY KEY,
                             user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                             name VARCHAR(100) NOT NULL,
                             goal NUMERIC(10, 2) DEFAULT 0,
@@ -22,12 +22,12 @@ CREATE TABLE categories (
  */
 
 @Repository
-public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer>, JpaSpecificationExecutor<CategoryEntity> {
-    List<CategoryEntity> findAllByUser_Id(Integer userId);
-    Page<CategoryEntity> findAllByUser_Id(Integer userId, Pageable pageable);
-    List<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal);
-    Page<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Integer userId, BigDecimal goal, Pageable pageable);
-    List<CategoryEntity> findAllByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal);
-    Page<CategoryEntity> findAllByUser_IdAndGoalLessThan(Integer userId, BigDecimal goal, Pageable pageable);
-    Optional<CategoryEntity> findByUser_IdAndName(Integer userId, String name);
+public interface CategoryRepository extends JpaRepository<CategoryEntity, Long>, JpaSpecificationExecutor<CategoryEntity> {
+    List<CategoryEntity> findAllByUser_Id(Long userId);
+    Page<CategoryEntity> findAllByUser_Id(Long userId, Pageable pageable);
+    List<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Long userId, BigDecimal goal);
+    Page<CategoryEntity> findAllByUser_IdAndGoalGreaterThan(Long userId, BigDecimal goal, Pageable pageable);
+    List<CategoryEntity> findAllByUser_IdAndGoalLessThan(Long userId, BigDecimal goal);
+    Page<CategoryEntity> findAllByUser_IdAndGoalLessThan(Long userId, BigDecimal goal, Pageable pageable);
+    Optional<CategoryEntity> findByUser_IdAndName(Long userId, String name);
 }

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 public class CategorySpecification implements Specification<CategoryEntity> {
 
-    private Integer userId;
+    private Long userId;
     private String nameContains;
     private BigDecimal minGoal;
     private BigDecimal maxGoal;

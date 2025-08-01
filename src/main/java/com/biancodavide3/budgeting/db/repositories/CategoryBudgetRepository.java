@@ -12,7 +12,7 @@ import java.util.Optional;
 
 /*
 CREATE TABLE category_budgets (
-                                  id SERIAL PRIMARY KEY,
+                                  id BIGSERIAL PRIMARY KEY,
                                   budget_id INTEGER REFERENCES budgets(id) ON DELETE CASCADE,
                                   category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
                                   amount NUMERIC(10, 2) NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE category_budgets (
  */
 
 @Repository
-public interface CategoryBudgetRepository extends JpaRepository<CategoryBudgetEntity, Integer>, JpaSpecificationExecutor<CategoryBudgetEntity> {
-    List<CategoryBudgetEntity> findAllByBudget_Id(Integer budgetId);
-    Page<CategoryBudgetEntity> findAllByBudget_Id(Integer budgetId, Pageable pageable);
-    Optional<CategoryBudgetEntity> findByBudget_IdAndCategory_Id(Integer budgetId, Integer categoryId);
+public interface CategoryBudgetRepository extends JpaRepository<CategoryBudgetEntity, Long>, JpaSpecificationExecutor<CategoryBudgetEntity> {
+    List<CategoryBudgetEntity> findAllByBudget_Id(Long budgetId);
+    Page<CategoryBudgetEntity> findAllByBudget_Id(Long budgetId, Pageable pageable);
+    Optional<CategoryBudgetEntity> findByBudget_IdAndCategory_Id(Long budgetId, Long categoryId);
 }

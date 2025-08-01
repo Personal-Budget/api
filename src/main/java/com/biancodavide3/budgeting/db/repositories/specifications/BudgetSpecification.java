@@ -13,7 +13,7 @@ import java.time.YearMonth;
 @Builder
 public class BudgetSpecification implements Specification<BudgetEntity> {
 
-    private Integer userId;
+    private Long userId;
     private YearMonth month;
     private BigDecimal minTotalBudget;
     private BigDecimal maxTotalBudget;
