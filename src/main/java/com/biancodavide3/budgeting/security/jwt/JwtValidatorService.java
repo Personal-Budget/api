@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.security;
+package com.biancodavide3.budgeting.security.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
@@ -12,7 +12,7 @@ import java.text.ParseException;
 
 @Service
 @AllArgsConstructor
-public class SupabaseJwtValidator {
+public class JwtValidatorService {
     private final DefaultJWTProcessor<SecurityContext> jwtProcessor;
 
     public String validateAndExtractUserId(String token) throws ParseException, BadJOSEException, JOSEException {

@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.security;
+package com.biancodavide3.budgeting.security.jwt;
 
 import com.biancodavide3.budgeting.properties.SupabaseProperties;
 import com.nimbusds.jose.JWSAlgorithm;

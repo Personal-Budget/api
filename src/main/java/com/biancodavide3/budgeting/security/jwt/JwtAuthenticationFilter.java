@@ -1,5 +1,6 @@
-package com.biancodavide3.budgeting.security;
+package com.biancodavide3.budgeting.security.jwt;
 
+import com.biancodavide3.budgeting.security.user.UserService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import jakarta.servlet.FilterChain;
@@ -22,7 +23,7 @@ import java.text.ParseException;
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final SupabaseJwtValidator jwtValidator;
+    private final JwtValidatorService jwtValidatorService;
     private final UserService userService;
 
     @Override
@@ -41,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
-            String supabaseId = jwtValidator.validateAndExtractUserId(token);
+            String supabaseId = jwtValidatorService.validateAndExtractUserId(token);
             var user = userService.getUserFromSupabaseId(supabaseId);
 
             var authentication = new UsernamePasswordAuthenticationToken(

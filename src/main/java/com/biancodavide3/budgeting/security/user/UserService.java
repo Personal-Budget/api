@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.security;
+package com.biancodavide3.budgeting.security.user;
 
 import com.biancodavide3.budgeting.db.entities.UserEntity;
 
