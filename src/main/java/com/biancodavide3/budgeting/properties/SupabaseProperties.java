@@ -14,4 +14,7 @@ public class SupabaseProperties  {
     private String secretKey;
     public String publishableKey;
     private String jwksUrl;
+    private String testUserEmail;
+    private String testUserPassword;
+    private String testUserId;
 }
