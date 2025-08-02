@@ -12,8 +12,20 @@ services:
     networks:
       - net
 
+  db_test:
+    image: xdavide9/budgeting-db:latest
+    container_name: db-test
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - data_test:/var/lib/postgresql/data
+    networks:
+      - net
+
 volumes:
   data:
+  data_test:
 
 networks:
   net:

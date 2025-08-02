@@ -4,6 +4,7 @@ import com.biancodavide3.budgeting.properties.SupabaseProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
+@ActiveProfiles("dev")
 class SupabaseJwtValidatorTest {
 
     @Autowired
