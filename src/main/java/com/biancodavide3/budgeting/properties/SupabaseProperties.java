@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class SupabaseProperties  {
     private String url;
     private String secretKey;
-    public String publishableKey;
+    private String publishableKey;
     private String jwksUrl;
     private String testUserEmail;
     private String testUserPassword;

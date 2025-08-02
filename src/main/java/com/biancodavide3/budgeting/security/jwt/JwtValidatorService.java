@@ -2,22 +2,15 @@ package com.biancodavide3.budgeting.security.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jwt.SignedJWT;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 
-@Service
-@AllArgsConstructor
-public class JwtValidatorService {
-    private final DefaultJWTProcessor<SecurityContext> jwtProcessor;
-
-    public String validateAndExtractUserId(String token) throws ParseException, BadJOSEException, JOSEException {
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        jwtProcessor.process(signedJWT, null);
-        return signedJWT.getJWTClaimsSet().getSubject();
-    }
+/**
+ * Introduced to run different versions of the application.
+ * One talks to supabase to authenticate real users while the other doesn't and just refers
+ * to a different database with fake users. When running the fake implementation the tokens sent
+ * in bearer must be valid uuids as that is what is stored instead as a supabaseId.
+ */
+public interface JwtValidatorService {
+    String validateTokenAndExtractSubject(String token) throws ParseException, BadJOSEException, JOSEException;
 }

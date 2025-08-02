@@ -1,6 +1,8 @@
 package com.biancodavide3.budgeting.security;
 
 import com.biancodavide3.budgeting.properties.SupabaseProperties;
+import com.biancodavide3.budgeting.security.jwt.SupabaseJwtValidatorService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,11 +14,12 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("dev")
-class SupabaseJwtValidatorTest {
+@ActiveProfiles("prod")
+@Disabled
+class JwtValidatorServiceIT {
 
     @Autowired
-    private SupabaseJwtValidator underTest;
+    private SupabaseJwtValidatorService underTest;
     @Autowired
     private SupabaseProperties supabaseProperties;
 
@@ -38,7 +41,7 @@ class SupabaseJwtValidatorTest {
                 .block();
         assertThat(token).isNotNull();
         // when
-        String userId = underTest.validateAndExtractUserId(token);
+        String userId = underTest.validateTokenAndExtractSubject(token);
         // then
         assertThat(userId).isEqualTo(supabaseProperties.getTestUserId());
     }

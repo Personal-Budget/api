@@ -42,9 +42,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
-            String supabaseId = jwtValidatorService.validateAndExtractUserId(token);
+            // subject = supabaseId
+            String supabaseId = jwtValidatorService.validateTokenAndExtractSubject(token);
             var user = userService.getUserFromSupabaseId(supabaseId);
-
+            // todo introduce userDetails in this part
             var authentication = new UsernamePasswordAuthenticationToken(
                     user, null, null
             );

@@ -1,5 +1,6 @@
 package com.biancodavide3.budgeting.properties;
 
+import com.biancodavide3.budgeting.BudgetingApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +10,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("dev")
-class SupabasePropertiesTest {
+class SupabasePropertiesIT {
 
     @Autowired
     private SupabaseProperties underTest;

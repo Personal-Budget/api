@@ -15,6 +15,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
+/**
+ * jwtProcessor configured to work with supabase jwks key.
+ */
 @Configuration
 public class JwtProcessorConfiguration {
     @Bean
