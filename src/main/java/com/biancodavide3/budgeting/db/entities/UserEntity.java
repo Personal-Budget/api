@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -16,12 +17,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String name;
-    private String email;
-    private String passwordHash;
-
-    private LocalDateTime createdAt;
+    private UUID supabaseId;
 
     @OneToMany(mappedBy = "user")
     private List<CategoryEntity> categories;

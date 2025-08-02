@@ -1,9 +1,7 @@
 -- Users table
 CREATE TABLE users (
                        id BIGSERIAL PRIMARY KEY,
-                       name VARCHAR(100) NOT NULL,
-                       email VARCHAR(255) UNIQUE NOT NULL,
-                       password_hash TEXT NOT NULL,
+                       supabase_id UUID NOT NULL,
                        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
                        updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

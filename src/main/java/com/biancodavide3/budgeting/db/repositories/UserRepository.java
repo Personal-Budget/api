@@ -6,9 +6,16 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
+
+/*
+CREATE TABLE users (
+                       id BIGSERIAL PRIMARY KEY,
+                       supabase_id UUID NOT NULL,
+);
+ */
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
-    Optional<UserEntity> findByName(String name);
-    Optional<UserEntity> findByEmail(String email);
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+    Optional<UserEntity> findBySupabaseId(UUID supabaseId);
 }
