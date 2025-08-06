@@ -79,7 +79,7 @@ BEGIN
     WHERE id = b_id;
 
     -- Validate
-    IF category_sum != expected_budget THEN
+    IF category_sum > expected_budget THEN
         RAISE EXCEPTION 'Sum of category budgets (%.2f) does not match total_budget (%.2f)', category_sum, expected_budget;
     END IF;
 
