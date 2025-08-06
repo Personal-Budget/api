@@ -19,6 +19,6 @@ public class UserEntity {
     private Long id;
     private UUID supabaseId;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<CategoryEntity> categories;
 }
