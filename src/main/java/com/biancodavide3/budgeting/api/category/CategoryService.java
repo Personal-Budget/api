@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.api.categories;
+package com.biancodavide3.budgeting.api.category;
 
 import com.biancodavide3.budgeting.db.entities.CategoryEntity;
 import com.biancodavide3.budgeting.db.repositories.CategoryRepository;
@@ -21,15 +21,15 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    public ResponseEntity<List<CategoryGET>> getCategories() {
+    public ResponseEntity<List<Category>> getCategories() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getUser().getId();
         CategorySpecification categorySpecification = CategorySpecification.builder()
                 .userId(userId)
                 .build();
-        List<CategoryGET> categories = categoryRepository.findAll(categorySpecification)
-                .stream().map(categoryEntity -> CategoryGET.builder()
+        List<Category> categories = categoryRepository.findAll(categorySpecification)
+                .stream().map(categoryEntity -> Category.builder()
                         .id(categoryEntity.getId())
                         .name(categoryEntity.getName())
                         .goal(categoryEntity.getGoal().doubleValue())
@@ -37,16 +37,16 @@ public class CategoryService {
         return ResponseEntity.ok(categories);
     }
 
-    public ResponseEntity<CategoryPOST> addCategory(CategoryPOST categoryPOST) {
+    public ResponseEntity<Category> addCategory(Category category) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getUser().getId();
         CategoryEntity categoryEntity = CategoryEntity.builder()
-                .name(categoryPOST.getName())
-                .goal(BigDecimal.valueOf(categoryPOST.getGoal()))
+                .name(category.getName())
+                .goal(BigDecimal.valueOf(category.getGoal()))
                 .user(userRepository.findById(userId).orElseThrow())
                 .build();
         categoryRepository.save(categoryEntity);
-        return ResponseEntity.ok(categoryPOST);
+        return ResponseEntity.ok(category);
     }
 }

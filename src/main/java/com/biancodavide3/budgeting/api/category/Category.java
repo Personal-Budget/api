@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.api.categories;
+package com.biancodavide3.budgeting.api.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryGET {
+public class Category {
     private Long id;
     private String name;
     private double goal;

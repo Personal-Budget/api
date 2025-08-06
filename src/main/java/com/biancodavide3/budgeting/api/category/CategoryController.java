@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.api.categories;
+package com.biancodavide3.budgeting.api.category;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +17,13 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryGET>> getCategories() {
+    public ResponseEntity<List<Category>> getCategories() {
         return categoryService.getCategories();
     }
 
     @PostMapping
-    public ResponseEntity<CategoryPOST> addCategory(CategoryPOST categoryPOST) {
-        return categoryService.addCategory(categoryPOST);
+    public ResponseEntity<Category> addCategory(Category category) {
+        return categoryService.addCategory(category);
     }
 
 }
