@@ -14,6 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Configures the application as an oauth2 resource server using JWT tokens.
+ * It uses the Supabase JWKs URL to decode the JWT tokens and a custom converter
+ */
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity

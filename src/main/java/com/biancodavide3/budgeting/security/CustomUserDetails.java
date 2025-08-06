@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Implementation of UserDetails that wraps the UserEntity to easily integrate with Spring Security.
+ */
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 

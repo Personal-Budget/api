@@ -12,8 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Trust supabase as source of truth for authenticating users. If there isn't a corresponding record
- * in app's db, create it.
+ * Returns the UserDetails based on the JWT token.
+ * Trust supabase as source of truth for authenticating users.
+ * If there isn't a corresponding record in app's db, create it.
  */
 @AllArgsConstructor
 @Slf4j
