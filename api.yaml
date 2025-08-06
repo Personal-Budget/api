@@ -8,58 +8,19 @@ servers:
   - url: https://api.budgetapp.com/v1
 
 paths: 
-  /auth/register:
-    post:
-      summary: Registrazione utente
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password, name]
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                  format: password
-                name:
-                  type: string
-      responses:
-        '201':
-          description: Registrazione completata
-        '400':
-          description: Dati non validi
-
-  /auth/login:
-    post:
-      summary: Login utente
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Login riuscito
-        '401':
-          description: Credenziali non valide
 
   /dashboard:
     get:
-      summary: Dati dashboard utente autenticato
+      summary: Dati dashboard mensile
       security:
         - bearerAuth: []
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "2025-02"
       responses:
         '200':
           description: Dati aggregati per la dashboard
@@ -68,10 +29,28 @@ paths:
               schema:
                 type: object
                 properties:
-                  totalSpent:
+                  monthly_total_budget:
                     type: number
-                  budget:
+                    description: totale pianificato di aver speso nel budget
+                  monthly_total_spent:
                     type: number
+                    description: totale speso nel mese passato per parametro
+                  annual_months:
+                    type: array
+                    description: lista di mesi con realativi importi totali spesi
+                    items:
+                      type: object
+                      properties:
+                        month:
+                          type: string
+                          example: "2025-02"
+                        amount:
+                          type: number
+                          example: 1500.75
+                  best_month_of_year:
+                    type: string
+                    descritpion: mese migliore dell'anno calcolato come il mese dove la differenza tra total_budget e total_spent è maggiore
+                    example: "2025-04"
                   categories:
                     type: array
                     items:
