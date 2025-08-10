@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 public class CategorySpecification implements Specification<CategoryEntity> {
 
     private Long userId;
+    private String nameEquals;
     private String nameContains;
     private BigDecimal minGoal;
     private BigDecimal maxGoal;
@@ -23,6 +24,10 @@ public class CategorySpecification implements Specification<CategoryEntity> {
 
         if (userId != null) {
             predicate = cb.and(predicate, cb.equal(root.get("user").get("id"), userId));
+        }
+
+        if (nameEquals != null && !nameEquals.isEmpty()) {
+            predicate = cb.and(predicate, cb.equal(cb.lower(root.get("name")), nameEquals.toLowerCase()));
         }
 
         if (nameContains != null && !nameContains.isEmpty()) {
