@@ -26,6 +26,6 @@ public class BudgetEntity {
     private YearMonth month;
     private BigDecimal totalBudget;
 
-    @OneToMany(mappedBy = "budget")
+    @OneToMany(mappedBy = "budget", fetch = FetchType.EAGER)
     private List<CategoryBudgetEntity> categoryBudgets;
 }
