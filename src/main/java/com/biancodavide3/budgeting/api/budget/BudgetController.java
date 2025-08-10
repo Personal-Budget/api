@@ -1,5 +1,6 @@
 package com.biancodavide3.budgeting.api.budget;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +26,7 @@ public class BudgetController {
     @PostMapping
     public ResponseEntity<String> addBudget(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody Budget budget
+            @RequestBody @Valid Budget budget
     ) {
         return budgetService.addBudget(budget, userDetails);
     }
