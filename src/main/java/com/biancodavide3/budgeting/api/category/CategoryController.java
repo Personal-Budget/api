@@ -1,11 +1,11 @@
 package com.biancodavide3.budgeting.api.category;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,13 +17,18 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getCategories() {
-        return categoryService.getCategories();
+    public ResponseEntity<List<CategoryResponse>> getCategories(
+            @AuthenticationPrincipal UserDetails userDetails
+            ) {
+        return categoryService.getCategories(userDetails);
     }
 
     @PostMapping
-    public ResponseEntity<Category> addCategory(Category category) {
-        return categoryService.addCategory(category);
+    public ResponseEntity<Object> addCategory(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid CategoryRequest categoryRequest
+            ) {
+        return categoryService.addCategory(userDetails, categoryRequest);
     }
 
 }
