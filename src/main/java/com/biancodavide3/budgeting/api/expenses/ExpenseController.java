@@ -1,7 +1,10 @@
 package com.biancodavide3.budgeting.api.expenses;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.YearMonth;
@@ -14,12 +17,18 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @GetMapping
-    public ResponseEntity<List<Expense>> getExpenses(@RequestParam YearMonth month) {
-        return expenseService.getExpenses(month);
+    public ResponseEntity<List<ExpenseResponse>> getExpenses(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam YearMonth month
+    ) {
+        return expenseService.getExpenses(userDetails, month);
     }
 
     @PostMapping
-    public ResponseEntity<Expense> addExpense(Expense expense) {
-        return expenseService.addExpense(expense);
+    public ResponseEntity<Object> addExpense(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid ExpenseRequest expenseRequest
+            ) {
+        return expenseService.addExpense(userDetails, expenseRequest);
     }
 }

@@ -2,19 +2,20 @@ package com.biancodavide3.budgeting.api.expenses;
 
 import com.biancodavide3.budgeting.db.entities.CategoryEntity;
 import com.biancodavide3.budgeting.db.entities.ExpenseEntity;
+import com.biancodavide3.budgeting.db.entities.UserEntity;
 import com.biancodavide3.budgeting.db.repositories.CategoryRepository;
 import com.biancodavide3.budgeting.db.repositories.ExpenseRepository;
 import com.biancodavide3.budgeting.db.repositories.UserRepository;
 import com.biancodavide3.budgeting.db.repositories.specifications.CategorySpecification;
 import com.biancodavide3.budgeting.db.repositories.specifications.ExpenseSpecification;
 import com.biancodavide3.budgeting.security.CustomUserDetails;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -26,10 +27,9 @@ public class ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
-    public ResponseEntity<List<Expense>> getExpenses(YearMonth month) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUser().getId();
+    public ResponseEntity<List<ExpenseResponse>> getExpenses(UserDetails userDetails, YearMonth month) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+        Long userId = customUserDetails.getUser().getId();
         LocalDate startDate = LocalDate.of(month.getYear(), month.getMonth(), 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
         ExpenseSpecification expenseSpecification = ExpenseSpecification.builder()
@@ -37,34 +37,53 @@ public class ExpenseService {
                 .dateFrom(startDate)
                 .dateTo(endDate)
                 .build();
-        List<Expense> body = expenseRepository.findAll(expenseSpecification).stream()
-                .map(expenseEntity -> Expense.builder()
+        List<ExpenseResponse> body = expenseRepository.findAll(expenseSpecification).stream()
+                .map(expenseEntity -> ExpenseResponse.builder()
+                        .id(expenseEntity.getId())
+                        .userId(expenseEntity.getUser().getId())
+                        .categoryId(expenseEntity.getCategory().getId())
                         .description(expenseEntity.getDescription())
-                        .amount(expenseEntity.getAmount().doubleValue())
+                        .amount(expenseEntity.getAmount())
                         .date(expenseEntity.getDate())
-                        .category(expenseEntity.getCategory().getName())
+                        .categoryName(expenseEntity.getCategory().getName())
                         .build())
                 .toList();
         return ResponseEntity.ok(body);
     }
 
-    public ResponseEntity<Expense> addExpense(Expense expense) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUser().getId();
+    @Transactional
+    public ResponseEntity<Object> addExpense(UserDetails userDetails, ExpenseRequest expenseRequest) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+        Long userId = customUserDetails.getUser().getId();
         CategorySpecification categorySpecification = CategorySpecification.builder()
                 .userId(userId)
-                .nameContains(expense.getCategory())
+                .nameEquals(expenseRequest.getCategory())
                 .build();
-        CategoryEntity categoryEntity = categoryRepository.findOne(categorySpecification).orElseThrow();
+        CategoryEntity categoryEntity = categoryRepository.findOne(categorySpecification).orElse(null);
+        if (categoryEntity == null) {
+            return ResponseEntity.badRequest().body("Category not found for user");
+        }
+        UserEntity user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
         ExpenseEntity expenseEntity = ExpenseEntity.builder()
-                .amount(BigDecimal.valueOf(expense.getAmount()))
-                .description(expense.getDescription())
-                .date(expense.getDate())
+                .amount(expenseRequest.getAmount())
+                .description(expenseRequest.getDescription())
+                .date(expenseRequest.getDate())
                 .category(categoryEntity)
-                .user(userRepository.findById(userId).orElseThrow())
+                .user(user)
                 .build();
-        expenseRepository.save(expenseEntity);
-        return ResponseEntity.ok(expense);
+        expenseEntity = expenseRepository.save(expenseEntity);
+        ExpenseResponse expenseResponse = ExpenseResponse.builder()
+                .id(expenseEntity.getId())
+                .userId(expenseEntity.getUser().getId())
+                .categoryId(expenseEntity.getCategory().getId())
+                .amount(expenseEntity.getAmount())
+                .description(expenseEntity.getDescription())
+                .date(expenseEntity.getDate())
+                .categoryName(expenseEntity.getCategory().getName())
+                .build();
+        return ResponseEntity.ok(expenseResponse);
     }
 }
