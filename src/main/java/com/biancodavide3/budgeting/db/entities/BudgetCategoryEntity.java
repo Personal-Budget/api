@@ -6,13 +6,13 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "category_budgets")
+@Table(name = "budget_categories")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryBudgetEntity {
+public class BudgetCategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,5 +25,5 @@ public class CategoryBudgetEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 
-    private BigDecimal amount;
+    private BigDecimal budgetedAmount;
 }

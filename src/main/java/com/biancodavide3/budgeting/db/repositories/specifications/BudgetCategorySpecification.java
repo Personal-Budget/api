@@ -1,6 +1,6 @@
 package com.biancodavide3.budgeting.db.repositories.specifications;
 
-import com.biancodavide3.budgeting.db.entities.CategoryBudgetEntity;
+import com.biancodavide3.budgeting.db.entities.BudgetCategoryEntity;
 import jakarta.persistence.criteria.*;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class CategoryBudgetSpecification implements Specification<CategoryBudgetEntity> {
+public class BudgetCategorySpecification implements Specification<BudgetCategoryEntity> {
 
     private Long budgetId;
     private Long categoryId;
@@ -18,7 +18,7 @@ public class CategoryBudgetSpecification implements Specification<CategoryBudget
     private BigDecimal maxAmount;
 
     @Override
-    public Predicate toPredicate(Root<CategoryBudgetEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+    public Predicate toPredicate(Root<BudgetCategoryEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         Predicate predicate = cb.conjunction();
 
         if (budgetId != null) {
