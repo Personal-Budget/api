@@ -14,10 +14,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BudgetCategory {
+public class BudgetCategoryRequest {
     @NotBlank(message = "budget category name cannot be blank")
     private String name;
     @NotNull(message = "budget category amount cannot be null")
     @Digits(integer = 10, fraction = 2, message = "budget category amount must be a valid decimal number with up to 10 digits and 2 decimal places")
-    private BigDecimal amount;
+    private BigDecimal budgetedAmount;
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Budget {
+public class BudgetRequest {
     @NotNull(message = "month cannot be null")
     private YearMonth month;
     @NotNull(message = "totalBudget cannot be null")
@@ -25,5 +25,5 @@ public class Budget {
     private BigDecimal totalBudget;
     @NotEmpty(message = "categories cannot be empty")
     @Valid
-    private List<BudgetCategory> categories;
+    private List<BudgetCategoryRequest> categories;
 }

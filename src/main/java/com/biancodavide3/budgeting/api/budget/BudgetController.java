@@ -16,18 +16,18 @@ public class BudgetController {
     private final BudgetService budgetService;
 
     @GetMapping
-    public ResponseEntity<Budget> getBudget(
+    public ResponseEntity<BudgetResponse> getBudget(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam YearMonth month
     ) {
-        return budgetService.getBudget(month, userDetails);
+        return budgetService.getBudget(userDetails, month);
     }
 
     @PostMapping
-    public ResponseEntity<String> addBudget(
+    public ResponseEntity<Object> addBudget(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody @Valid Budget budget
+            @RequestBody @Valid BudgetRequest budgetRequest
     ) {
-        return budgetService.addBudget(budget, userDetails);
+        return budgetService.addBudget(userDetails, budgetRequest);
     }
 }
