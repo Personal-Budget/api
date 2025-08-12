@@ -5,7 +5,9 @@ import com.biancodavide3.budgeting.db.entities.UserEntity;
 import com.biancodavide3.budgeting.db.repositories.CategoryRepository;
 import com.biancodavide3.budgeting.db.repositories.UserRepository;
 import com.biancodavide3.budgeting.db.repositories.specifications.CategorySpecification;
-import com.biancodavide3.budgeting.security.CustomUserDetails;
+import com.biancodavide3.budgeting.exceptions.category.CategoryAlreadyExistsException;
+import com.biancodavide3.budgeting.exceptions.user.UserNotFoundException;
+import com.biancodavide3.budgeting.util.Users;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,47 +25,65 @@ public class CategoryService {
     private final UserRepository userRepository;
 
     public ResponseEntity<List<CategoryResponse>> getCategories(UserDetails userDetails) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        CategorySpecification categorySpecification = CategorySpecification.builder()
-                .userId(customUserDetails.getUser().getId())
+        Long userId = Users.extractUserId(userDetails);
+        List<CategoryEntity> categoryEntities = findCategoriesByUserId(userId);
+        List<CategoryResponse> categoryResponses = buildCategoryResponses(categoryEntities);
+        return ResponseEntity.ok(categoryResponses);
+    }
+
+    private List<CategoryEntity> findCategoriesByUserId(Long userId) {
+        CategorySpecification spec = CategorySpecification.builder()
+                .userId(userId)
                 .build();
-        List<CategoryResponse> categories = categoryRepository.findAll(categorySpecification)
-                .stream().map(categoryEntity -> CategoryResponse.builder()
-                        .id(categoryEntity.getId())
-                        .userId(categoryEntity.getUser().getId())
-                        .name(categoryEntity.getName())
-                        .goal(categoryEntity.getGoal())
-                        .build()).toList();
-        return ResponseEntity.ok(categories);
+        return categoryRepository.findAll(spec);
+    }
+
+    private List<CategoryResponse> buildCategoryResponses(List<CategoryEntity> entities) {
+        return entities.stream()
+                .map(this::buildCategoryResponse)
+                .toList();
     }
 
     @Transactional
     public ResponseEntity<Object> addCategory(UserDetails userDetails, CategoryRequest categoryRequest) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        Long userId = customUserDetails.getUser().getId();
+        Long userId = Users.extractUserId(userDetails);
+        checkCategoryExists(userId, categoryRequest.getName());
+        UserEntity user = findUser(userId);
+        CategoryEntity categoryEntity = buildCategoryEntity(categoryRequest, user);
+        categoryEntity = categoryRepository.save(categoryEntity);
+        CategoryResponse categoryResponse = buildCategoryResponse(categoryEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponse);
+    }
+
+    private void checkCategoryExists(Long userId, String categoryName) {
         CategorySpecification categorySpecification = CategorySpecification.builder()
                 .userId(userId)
-                .nameEquals(categoryRequest.getName())
+                .nameEquals(categoryName)
                 .build();
         if (categoryRepository.exists(categorySpecification)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Category for this user and name already exists");
+            throw new CategoryAlreadyExistsException();
         }
-        UserEntity user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-        CategoryEntity categoryEntity = CategoryEntity.builder()
+    }
+
+    private UserEntity findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    private CategoryEntity buildCategoryEntity(CategoryRequest categoryRequest, UserEntity user) {
+        return CategoryEntity.builder()
                 .name(categoryRequest.getName())
                 .goal(categoryRequest.getGoal())
                 .user(user)
                 .build();
-        categoryEntity = categoryRepository.save(categoryEntity);
-        CategoryResponse categoryResponse = CategoryResponse.builder()
+    }
+
+    private CategoryResponse buildCategoryResponse(CategoryEntity categoryEntity) {
+        return CategoryResponse.builder()
                 .id(categoryEntity.getId())
                 .userId(categoryEntity.getUser().getId())
                 .name(categoryEntity.getName())
                 .goal(categoryEntity.getGoal())
                 .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponse);
     }
 }
