@@ -23,6 +23,6 @@ public class DashboardController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam YearMonth month
     ) {
-        return dashboardService.getDashboard(month);
+        return dashboardService.getDashboard(userDetails, month);
     }
 }

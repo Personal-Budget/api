@@ -9,11 +9,10 @@ import com.biancodavide3.budgeting.db.repositories.ExpenseRepository;
 import com.biancodavide3.budgeting.db.repositories.specifications.BudgetSpecification;
 import com.biancodavide3.budgeting.db.repositories.specifications.CategorySpecification;
 import com.biancodavide3.budgeting.db.repositories.specifications.ExpenseSpecification;
-import com.biancodavide3.budgeting.security.CustomUserDetails;
+import com.biancodavide3.budgeting.util.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -34,10 +33,8 @@ public class DashboardService {
     private final ExpenseRepository expenseRepository;
     private final BudgetRepository budgetRepository;
 
-    public ResponseEntity<DashboardResponse> getDashboard(YearMonth yearMonth) throws NumberFormatException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUser().getId();
+    public ResponseEntity<DashboardResponse> getDashboard(UserDetails userDetails, YearMonth yearMonth) {
+        Long userId = Users.extractUserId(userDetails);
         int year = yearMonth.getYear();
         Month monthNumber = yearMonth.getMonth();
         LocalDate startDate = LocalDate.of(year, monthNumber, 1);
