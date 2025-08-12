@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.api.expenses;
+package com.biancodavide3.budgeting.api.expense;
 
 import com.biancodavide3.budgeting.db.entities.CategoryEntity;
 import com.biancodavide3.budgeting.db.entities.ExpenseEntity;

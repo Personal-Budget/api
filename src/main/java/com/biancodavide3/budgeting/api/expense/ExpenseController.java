@@ -1,4 +1,4 @@
-package com.biancodavide3.budgeting.api.expenses;
+package com.biancodavide3.budgeting.api.expense;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
