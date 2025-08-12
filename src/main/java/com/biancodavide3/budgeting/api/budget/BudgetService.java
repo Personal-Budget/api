@@ -9,7 +9,11 @@ import com.biancodavide3.budgeting.db.repositories.CategoryRepository;
 import com.biancodavide3.budgeting.db.repositories.UserRepository;
 import com.biancodavide3.budgeting.db.repositories.specifications.BudgetSpecification;
 import com.biancodavide3.budgeting.db.repositories.specifications.CategorySpecification;
-import com.biancodavide3.budgeting.security.CustomUserDetails;
+import com.biancodavide3.budgeting.exceptions.budget.BudgetAlreadyExistsException;
+import com.biancodavide3.budgeting.exceptions.budget.BudgetNotFoundException;
+import com.biancodavide3.budgeting.exceptions.category.CategoryNotFoundException;
+import com.biancodavide3.budgeting.exceptions.user.UserNotFoundException;
+import com.biancodavide3.budgeting.util.Users;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,52 +36,22 @@ public class BudgetService {
     private final UserRepository userRepository;
 
     public ResponseEntity<BudgetResponse> getBudget(UserDetails userDetails, YearMonth month) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        Long userId = customUserDetails.getUser().getId();
-        BudgetSpecification budgetSpecification = BudgetSpecification.builder()
-                .userId(userId)
-                .month(month)
-                .build();
-        return budgetRepository.findOne(budgetSpecification)
-                .map(budgetEntity -> {
-                    List<BudgetCategoryResponse> categories = budgetEntity.getBudgetCategories().stream()
-                            .map(budgetCategoryEntity -> BudgetCategoryResponse.builder()
-                                    .id(budgetCategoryEntity.getId())
-                                    .categoryId(budgetCategoryEntity.getCategory().getId())
-                                    .budgetId(budgetEntity.getId())
-                                    .categoryName(budgetCategoryEntity.getCategory().getName())
-                                    .budgetedAmount(budgetCategoryEntity.getBudgetedAmount())
-                                    .build())
-                            .toList();
-                    return BudgetResponse.builder()
-                            .id(budgetEntity.getId())
-                            .userId(budgetEntity.getUser().getId())
-                            .totalBudget(budgetEntity.getTotalBudget())
-                            .categories(categories)
-                            .month(month)
-                            .build();
-                })
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Long userId = Users.extractUserId(userDetails);
+        BudgetEntity budgetEntity = findBudget(userId, month);
+        BudgetResponse budgetResponse = buildBudgetResponse(budgetEntity);
+        return ResponseEntity.ok(budgetResponse);
     }
 
     @Transactional
     public ResponseEntity<Object> addBudget(UserDetails userDetails, BudgetRequest budgetRequest) {
-        Long userId = getUserId(userDetails);
+        Long userId = Users.extractUserId(userDetails);
 
-        if (budgetExists(userId, budgetRequest.getMonth())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("BudgetRequest already exists");
-        }
+        checkBudgetExists(userId, budgetRequest.getMonth());
 
-        Map<String, CategoryEntity> nameToEntity = mapCategoryNamesToEntities(budgetRequest.getCategories());
-        if (!allCategoriesExist(budgetRequest.getCategories(), nameToEntity)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("One or more categories do not exist");
-        }
+        Map<String, CategoryEntity> nameToEntity = mapCategoryNamesToEntities(userId, budgetRequest.getCategories());
+        checkAllCategoriesExist(budgetRequest.getCategories(), nameToEntity);
 
-        UserEntity user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+        UserEntity user = findUser(userId);
 
         BudgetEntity budgetEntity = buildBudgetEntity(user, budgetRequest, nameToEntity);
         budgetEntity = budgetRepository.save(budgetEntity);
@@ -86,26 +60,46 @@ public class BudgetService {
         return ResponseEntity.status(HttpStatus.CREATED).body(budgetResponse);
     }
 
-    private Long getUserId(UserDetails userDetails) {
-        return ((CustomUserDetails) userDetails).getUser().getId();
+    private BudgetEntity findBudget(Long userId, YearMonth month) {
+        BudgetSpecification spec = BudgetSpecification.builder()
+                .userId(userId)
+                .month(month)
+                .build();
+        return budgetRepository.findOne(spec).orElseThrow(BudgetNotFoundException::new);
     }
 
-    private boolean budgetExists(Long userId, YearMonth month) {
-        BudgetSpecification spec = BudgetSpecification.builder().userId(userId).month(month).build();
-        return budgetRepository.exists(spec);
+    private void checkBudgetExists(Long userId, YearMonth month) {
+        BudgetSpecification spec = BudgetSpecification.builder()
+                .userId(userId)
+                .month(month)
+                .build();
+        if (budgetRepository.exists(spec)) {
+            throw new BudgetAlreadyExistsException();
+        }
     }
 
-    private Map<String, CategoryEntity> mapCategoryNamesToEntities(List<BudgetCategoryRequest> categories) {
+    private Map<String, CategoryEntity> mapCategoryNamesToEntities(Long userId, List<BudgetCategoryRequest> categories) {
         return categories.stream()
                 .map(cat -> categoryRepository.findOne(
-                        CategorySpecification.builder().nameEquals(cat.getName()).build()
+                        CategorySpecification.builder()
+                                .userId(userId)
+                                .nameEquals(cat.getName())
+                                .build()
                 ).orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(CategoryEntity::getName, e -> e));
     }
 
-    private boolean allCategoriesExist(List<BudgetCategoryRequest> categories, Map<String, CategoryEntity> nameToEntity) {
-        return categories.stream().allMatch(cat -> nameToEntity.containsKey(cat.getName()));
+    private void checkAllCategoriesExist(List<BudgetCategoryRequest> categories, Map<String, CategoryEntity> nameToEntity) {
+        boolean allExist = categories.stream().allMatch(cat -> nameToEntity.containsKey(cat.getName()));
+        if (!allExist) {
+            throw new CategoryNotFoundException("One or more categories not found");
+        }
+    }
+
+    private UserEntity findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private BudgetEntity buildBudgetEntity(UserEntity user, BudgetRequest budgetRequest, Map<String, CategoryEntity> nameToEntity) {
@@ -124,8 +118,8 @@ public class BudgetService {
                 .build();
     }
 
-    private BudgetResponse buildBudgetResponse(BudgetEntity budgetEntity) {
-        List<BudgetCategoryResponse> categoriesResponse = budgetEntity.getBudgetCategories().stream()
+    private List<BudgetCategoryResponse> buildCategoriesResponse(BudgetEntity budgetEntity) {
+        return budgetEntity.getBudgetCategories().stream()
                 .map(budgetCategoryEntity -> BudgetCategoryResponse.builder()
                         .id(budgetCategoryEntity.getId())
                         .categoryId(budgetCategoryEntity.getCategory().getId())
@@ -134,7 +128,10 @@ public class BudgetService {
                         .budgetedAmount(budgetCategoryEntity.getBudgetedAmount())
                         .build())
                 .toList();
+    }
 
+    private BudgetResponse buildBudgetResponse(BudgetEntity budgetEntity) {
+        List<BudgetCategoryResponse> categoriesResponse = buildCategoriesResponse(budgetEntity);
         return BudgetResponse.builder()
                 .id(budgetEntity.getId())
                 .userId(budgetEntity.getUser().getId())
